@@ -90,9 +90,11 @@ export function FileStoreProvider({ children }: { children: ReactNode }) {
         if (folder) {
           const newPath = [{ id: null, name: "My Files" }];
           folder.path.forEach((pathName, index) => {
+            //  Recherche du dossier parent par son nom
             const pathFolder = files.find(
               (f) => f.name === pathName && f.type === "folder",
             );
+
             if (pathFolder) {
               newPath.push({ id: pathFolder.id, name: pathFolder.name });
             }
