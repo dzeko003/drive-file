@@ -30,7 +30,7 @@ import { useFileStore } from "@/lib/file-store";
 import { cn } from "@/lib/utils";
 
 export default function TopNavbar() {
-  //   const { viewMode, setViewMode, isSearching } = useFileStore();
+  const { viewMode, setViewMode, isSearching } = useFileStore();
   return (
     <header className="border-b border-sidebar-border p-3 flex items-center justify-between ">
       <SidebarTrigger />
@@ -50,8 +50,9 @@ export default function TopNavbar() {
                 size="icon"
                 className={cn(
                   "w-8 h-8 rounded-md",
-                  //   viewMode === "grid" && "bg-background shadow-sm",
+                  viewMode === "grid" && "bg-background shadow-sm",
                 )}
+                onClick={() => setViewMode("grid")}
               >
                 <Grid3X3 className="w-4 h-4" />
               </Button>
@@ -67,8 +68,9 @@ export default function TopNavbar() {
                 size="icon"
                 className={cn(
                   "w-8 h-8 rounded-md",
-                  //   viewMode === "list" && "bg-background shadow-sm",
+                  viewMode === "list" && "bg-background shadow-sm",
                 )}
+                onClick={() => setViewMode("list")}
               >
                 <List className="w-4 h-4" />
               </Button>

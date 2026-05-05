@@ -49,7 +49,7 @@ const SortButton = ({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8 gap-1 font-medium"
+      className=" h-8 gap-1 font-medium"
       onClick={() => handleSort(column)}
     >
       {children}
@@ -76,8 +76,8 @@ export default function FileList({ files, highlightQuery }: FileListProps) {
     <div className="rounded-xl border bg-card">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-12"></TableHead>
+          <TableRow className="hover:bg-transparent">
+            <TableHead></TableHead>
             <TableHead>
               <SortButton column="name">Name</SortButton>
             </TableHead>
@@ -94,21 +94,24 @@ export default function FileList({ files, highlightQuery }: FileListProps) {
           {files.map((file) => (
             <ContextMenu key={file.id}>
               <ContextMenuTrigger asChild>
-                <TableRow>
+                <TableRow
+                  className="cursor-pointer group"
+                  onDoubleClick={() => handleDoubleClick(file)}
+                >
                   <TableCell>
                     <div className="flex items-center justify-center">
                       <FileIcon type={file.type} size="sm" />
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-medium truncate">
                         {highlightQuery
                           ? highlightMatch(file.name, highlightQuery)
                           : file.name}
                       </span>
                       {file.isFavorite && (
-                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400 shrink-0" />
                       )}
                     </div>
                   </TableCell>
@@ -123,7 +126,7 @@ export default function FileList({ files, highlightQuery }: FileListProps) {
                   </TableCell>
                 </TableRow>
               </ContextMenuTrigger>
-              <ContextMenuContent>
+              <ContextMenuContent className="w-56">
                 <FileContextMenuItems file={file} />
               </ContextMenuContent>
             </ContextMenu>

@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Clock, FolderOpen, HardDrive, Star, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Separator } from "./ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Progress } from "./ui/progress";
 
 const navItems = [
   { id: "files" as const, icon: FolderOpen, label: "My Files", href: "/" },
@@ -39,6 +43,13 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+
+  const usedStorage = 4.2; // GB
+  const totalStorage = 15; // GB
+  const storagePercent = (usedStorage / totalStorage) * 100;
+
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar collapsible="icon">
@@ -73,37 +84,99 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="flex items-center gap-4 w-full overflow-x-hidden">
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+        <div className="flex flex-col gap-3">
+          <Separator className="bg-sidebar-border" />
 
-              <div className="flex flex-col gap-2 items-start">
-                <span className="text-xs text-muted-foreground">
-                  berenis MASSAMBA
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  berenismassamba@gmail.com
+          {/* Stockage */}
+          {isCollapsed ? (
+            // Mode icône : uniquement le cercle SVG centré
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex justify-center py-1">
+                  <div className="h-8 w-8 relative">
+                    <svg className="h-8 w-8 -rotate-90">
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="14"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        className="text-sidebar-accent"
+                      />
+                      <circle
+                        cx="16"
+                        cy="16"
+                        r="14"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeDasharray={`${storagePercent * 0.88} 88`}
+                        className="text-primary"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p className="font-medium">
+                  {usedStorage} GB / {totalStorage} GB utilisés
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <div className="space-y-2 px-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-sidebar-foreground/70">Stockage</span>
+                <span className="font-medium text-sidebar-foreground">
+                  {usedStorage} GB / {totalStorage} GB
                 </span>
               </div>
+              <Progress value={storagePercent} className="h-2" />
+              <p className="text-xs text-sidebar-foreground/60">
+                {(totalStorage - usedStorage).toFixed(1)} GB libres
+              </p>
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+
+          {/* Utilisateur */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-3 w-full overflow-x-hidden cursor-pointer rounded-md p-1 hover:bg-sidebar-accent transition-colors">
+                <Avatar className="shrink-0">
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>BM</AvatarFallback>
+                </Avatar>
+
+                {!isCollapsed && (
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="text-xs font-medium text-sidebar-foreground truncate w-full">
+                      Berenis MASSAMBA
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate w-full">
+                      berenismassamba@gmail.com
+                    </span>
+                  </div>
+                )}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side={isCollapsed ? "right" : "top"}
+              align="start"
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                <DropdownMenuItem>Profil</DropdownMenuItem>
+                <DropdownMenuItem>Facturation</DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>Équipe</DropdownMenuItem>
+                <DropdownMenuItem>Abonnement</DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
